@@ -1,0 +1,122 @@
+import React, { useState, useEffect } from 'react';
+import jsPDF from 'jspdf';
+import { Line } from 'react-chartjs-2';
+
+export default function HomePage() {
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [feedback, setFeedback] = useState('');
+  const [examDate, setExamDate] = useState(new Date('2025-03-15').getTime());
+  const [countdown, setCountdown] = useState('');
+  const [testHistory, setTestHistory] = useState([
+    { date: '2025-03-01', score: 80 },
+    { date: '2025-03-03', score: 85 },
+    { date: '2025-03-05', score: 90 }
+  ]);
+  const [notifications, setNotifications] = useState([]);
+  const [blogPosts, setBlogPosts] = useState([
+    { title: 'Punjab Budget 2025', content: 'The Punjab government announced...' },
+    { title: 'New Vacancies in Punjab Police', content: 'The Punjab Police has announced...' }
+  ]);
+  const [jobAlerts, setJobAlerts] = useState([
+    { title: 'Punjab Clerk Vacancy', details: 'Apply before 15th March 2025' },
+    { title: 'Patwari Vacancy', details: 'Last Date: 25th March 2025' }
+  ]);
+  const [chat, setChat] = useState([]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = examDate - now;
+      if (distance < 0) {
+        clearInterval(timer);
+        setCountdown('Exam Started');
+      } else {
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        setCountdown(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+      }
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [examDate]);
+
+  const handleNotification = () => {
+    const message = prompt('Enter Notification Message');
+    if (message) {
+      setNotifications([...notifications, message]);
+      alert('Notification Sent to All Users!');
+    }
+  };
+
+  const handleChat = () => {
+    const message = prompt('Enter your Message');
+    if (message) {
+      setChat([...chat, { user: 'User', message }]);
+      setChat([...chat, { user: 'Admin', message: 'We will get back to you shortly.' }]);
+    }
+  };
+
+  const handleJobAlert = () => {
+    const title = prompt('Enter Job Title');
+    const details = prompt('Enter Job Details');
+    if (title && details) {
+      setJobAlerts([...jobAlerts, { title, details }]);
+      alert('Job Alert Added!');
+    }
+  };
+
+  return (
+    <div className="bg-gray-100 min-h-screen">
+      <header className="bg-blue-700 text-white p-5 text-center">
+        <h1 className="text-4xl font-bold">PrepXPunjab</h1>
+        <p className="text-lg">Your Gateway to Success in Punjab Exams</p>
+        <p className="text-md font-semibold">Owner: Gurlabh Singh Shergarh</p>
+        <button onClick={handleNotification} className="bg-yellow-500 text-white px-4 py-2 rounded mt-2">
+          📩 Send Notification
+        </button>
+        <button onClick={handleJobAlert} className="bg-green-500 text-white px-4 py-2 rounded mt-2">
+          💼 Add Job Alert
+        </button>
+      </header>
+
+      <section className="p-5">
+        <h2 className="text-2xl font-semibold">📜 Current Affairs</h2>
+        {blogPosts.map((post, index) => (
+          <div key={index} className="p-3 border-b">
+            <h3 className="text-lg font-bold">{post.title}</h3>
+            <p>{post.content}</p>
+          </div>
+        ))}
+      </section>
+
+      <section className="p-5">
+        <h2 className="text-2xl font-semibold">💼 Job Vacancy Alerts</h2>
+        {jobAlerts.map((alert, index) => (
+          <div key={index} className="p-3 border-b bg-green-100">
+            <h3 className="text-lg font-bold">{alert.title}</h3>
+            <p>{alert.details}</p>
+          </div>
+        ))}
+      </section>
+
+      <section className="p-5">
+        <h2 className="text-2xl font-semibold">💬 Live Chat Support</h2>
+        <button onClick={handleChat} className="bg-blue-500 text-white px-4 py-2 rounded mb-2">
+          Start Chat
+        </button>
+        {chat.map((chatMsg, index) => (
+          <div key={index} className="p-2 border-b">
+            <strong>{chatMsg.user}:</strong> {chatMsg.message}
+          </div>
+        ))}
+      </section>
+
+      <footer className="bg-blue-700 text-white text-center p-5">
+        <p>© 2025 PrepXPunjab. All rights reserved.</p>
+        <p>Contact: support@prepxpunjab.com</p>
+        <p>Owner: Gurlabh Singh Shergarh</p>
+      </footer>
+    </div>
+  );
+}
